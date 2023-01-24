@@ -89,7 +89,7 @@ class Tess_Env(object):
 		tesseract_collision.flattenResults(result,result_vector)
 		###iterate all collision instances
 		for c in result_vector: 
-			if (robot_name in c.link_names[0] or robot_name in c.link_names[1])
+			if (robot_name in c.link_names[0] or robot_name in c.link_names[1]):
 				return True
 
 		return False
