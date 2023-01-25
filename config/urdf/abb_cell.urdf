@@ -16,11 +16,11 @@
   <joint name="ABB_6640_180_255_pedestal_joint" type="fixed">
     <parent link="ABB_6640_180_255_base_link"/>
     <child link="ABB_6640_180_255_pedestal"/>
-    <origin rpy="0.0 0.0 0.0" xyz="0 0 0"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0 0 -0.0127"/>
   </joint>
   <link name="ABB_6640_180_255_pedestal">
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 -0.0127"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <box size="1.2192 1.0668 0.0254"/>
       </geometry>
@@ -75,7 +75,7 @@
   <joint name="shelf2_pose" type="fixed">
     <parent link="world"/>
     <child link="Shelf2"/>
-    <origin rpy="0.0 0.0 0" xyz="3.3528 -2.0193 1.1143"/>
+    <origin rpy="0.0 0.0 0" xyz="3.3528 -2.0193 1.143"/>
   </joint>
 
 
@@ -128,7 +128,7 @@
         <box size="0.01 6.4 4"/>
       </geometry>
       <material name="">
-        <color rgba="0.72941176470588237 0.14901960784313725 0.1490196078431373 1.0"/>
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
       </material>
     </visual>
     <collision>
@@ -149,7 +149,7 @@
         <box size="0.01 6.4 4"/>
       </geometry>
       <material name="">
-        <color rgba="0.72941176470588237 0.14901960784313725 0.1490196078431373 1.0"/>
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
       </material>
     </visual>
     <collision>
@@ -170,7 +170,7 @@
         <box size="4.953 0.01 4"/>
       </geometry>
       <material name="">
-        <color rgba="0.72941176470588237 0.14901960784313725 0.1490196078431373 1.0"/>
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
       </material>
     </visual>
     <collision>
@@ -192,7 +192,7 @@
         <box size="4.953 0.01 4"/>
       </geometry>
       <material name="">
-        <color rgba="0.72941176470588237 0.14901960784313725 0.1490196078431373 1.0"/>
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
       </material>
     </visual>
     <collision>
@@ -206,6 +206,29 @@
     <child link="Wall4"/>
     <origin rpy="0.0 0.0 0" xyz="1.3462 3.2 2"/>
   </joint>
+
+
+  <link name="Ground">
+    <visual>
+      <geometry>
+        <box size="4.953 6.4 0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="4.953 6.4 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Ground_pose" type="fixed">
+    <parent link="world"/>
+    <child link="Ground"/>
+    <origin rpy="0.0 0.0 0" xyz="1.3462 0 -0.005"/>
+  </joint>
+
 
 
 
@@ -481,7 +504,7 @@
       <inertia ixx=".017" ixy="0" ixz="0" iyy=".009" iyz="0" izz=".009"/>
     </inertial>
   </link>
-  <link name="ABB_6640_180_255_tool">
+<!--   <link name="ABB_6640_180_255_tool">
     <visual name="visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -495,8 +518,9 @@
         <mesh filename="model://paintgun/meshes/paint_gun.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
+  </link> -->
 
-  </link>
+  
   <!-- end of link list -->
   <!-- joint list -->
   <joint name="ABB_6640_180_255_joint_1" type="revolute">
@@ -541,11 +565,11 @@
     <child link="ABB_6640_180_255_link_6"/>
     <limit effort="0" lower="-6.283" upper="6.283" velocity="3.3161"/>
   </joint>
-  <joint name="joint_6-tool0" type="fixed">
+<!--   <joint name="joint_6-tool0" type="fixed">
     <parent link="ABB_6640_180_255_link_6"/>
     <child link="ABB_6640_180_255_tool"/>
     <origin rpy="0 1.57079632679 0" xyz="0 0 0"/>
-  </joint>
+  </joint> -->
   <!-- end of joint list -->
 
 

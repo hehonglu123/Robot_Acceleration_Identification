@@ -34,6 +34,8 @@
     This tag disables collision checking between a specified pair of links. -->
 
   <!-- ABB_6640_180_255 -->
+  <disable_collisions link1="ABB_6640_180_255_base_link" link2="ABB_6640_180_255_pedestal" reason="Adjacent" />
+  <disable_collisions link1="ABB_6640_180_255_base_link" link2="Ground" reason="Adjacent" />
   <disable_collisions link1="ABB_6640_180_255_base_link" link2="ABB_6640_180_255_link_1" reason="Adjacent" />
   <disable_collisions link1="ABB_6640_180_255_link_1" link2="ABB_6640_180_255_link_2" reason="Adjacent" />
   <disable_collisions link1="ABB_6640_180_255_link_2" link2="ABB_6640_180_255_link_3" reason="Adjacent" />
@@ -45,4 +47,7 @@
   <disable_collisions link1="ABB_6640_180_255_link_4" link2="ABB_6640_180_255_link_5" reason="Adjacent" />
   <disable_collisions link1="ABB_6640_180_255_link_5" link2="ABB_6640_180_255_link_6" reason="Adjacent" />
 
+  <!-- ABB_6640_180_255 Manual Adjustment-->
+  <disable_collisions link1="ABB_6640_180_255_link_2" link2="ABB_6640_180_255_link_4" reason="Adjacent" />
+  <disable_collisions link1="ABB_6640_180_255_link_4" link2="ABB_6640_180_255_link_6" reason="Adjacent" />
 </robot>

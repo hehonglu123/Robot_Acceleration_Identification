@@ -4,6 +4,7 @@ import json, pickle, copy
 from scipy.interpolate import interp1d
 
 from robot_def import *
+from tes_env import *
 import matplotlib.pyplot as plt
 
 #########################################################robot specific control functions##################################################
@@ -75,7 +76,7 @@ def exec(q_d,joint,displacement,MotionProgramFunc,robot_client):
 	q_end[joint]-=displacement
 	
 	mp = MotionProgramFunc()
-	movej_abb(q_d,999999,0,(mp,))
+	movej_abb(q_d,200,0,(mp,))
 
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
@@ -89,7 +90,7 @@ def exec(q_d,joint,displacement,MotionProgramFunc,robot_client):
 
 
 
-def main():
+def capture_acc():
 	robot=robot_obj('ABB_6640_180_255','config/abb_6640_180_255_robot_default_config.yml')
 	MotionProgramFunc=MotionProgram
 	robot_client=MotionProgramExecClient(base_url="http://127.0.0.1:80")
@@ -127,7 +128,47 @@ def main():
 		f.write(str(dict_table))
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
+def capture_acc_collision():
+	robot_name='ABB_6640_180_255'
+	robot=robot_obj(robot_name,'config/abb_6640_180_255_robot_default_config.yml')
+	MotionProgramFunc=MotionProgram
+	robot_client=MotionProgramExecClient(base_url="http://127.0.0.1:80")
+	t=Tess_Env('config/urdf/abb_cell')				#create obj
+
+	resolution=0.05 ###rad
+	displacement=0.02
+
+	dict_table={}
+	directions=[-1,1]
+
+	#####################first & second joint acc both depends on second and third joint#####################################
+	for q2 in np.arange(robot.lower_limit[1]+displacement+0.01,robot.upper_limit[1]-displacement-0.01,resolution):
+		for q3 in np.arange(robot.lower_limit[2]+displacement+0.01,robot.upper_limit[2]-displacement-0.01,resolution):
+			###check for collision
+			if t.check_collision_single(robot_name,np.array([0,q2,q3,0,0,0])):
+				continue
+			###initialize keys, and desired pose
+			dict_table[(q2,q3)]=[0]*6 		###[+j1,-j1,+j2,-j2,+j3,-j3]
+			q_d=[0,q2,q3,0,0,0]
+
+			#measure first joint first
+			qddot_max,_=exec(q_d,0,displacement,MotionProgramFunc,robot_client)
+			###update dict
+			dict_table[(q2,q3)][0]=qddot_max
+			dict_table[(q2,q3)][1]=qddot_max
+
+			for joint in range(1,3):
+				###move first q2 and q3
+				qddot_max_p,qddot_max_n=exec(q_d,joint,displacement,MotionProgramFunc,robot_client)
+				###update dict
+				dict_table[(q2,q3)][2*joint]=qddot_max_p
+				dict_table[(q2,q3)][2*joint+1]=qddot_max_n
+
+
+	with open(r'test.txt','w+') as f:
+		f.write(str(dict_table))
+	pickle.dump(dict_table, open('test.pickle','wb'))
 
 
 if __name__ == '__main__':
-	main()
+	capture_acc_collision()

@@ -28,7 +28,7 @@ class Tess_Env(object):
 
 		#link and joint names in urdf
 		ABB_6640_180_255_joint_names=["ABB_6640_180_255_joint_1","ABB_6640_180_255_joint_2","ABB_6640_180_255_joint_3","ABB_6640_180_255_joint_4","ABB_6640_180_255_joint_5","ABB_6640_180_255_joint_6"]
-		ABB_6640_180_255_link_names=["ABB_6640_180_255_link_1","ABB_6640_180_255_link_2","ABB_6640_180_255_link_3","ABB_6640_180_255_link_4","ABB_6640_180_255_link_5","ABB_6640_180_255_link_6","ABB_6640_180_255_tool"]
+		ABB_6640_180_255_link_names=["ABB_6640_180_255_link_1","ABB_6640_180_255_link_2","ABB_6640_180_255_link_3","ABB_6640_180_255_link_4","ABB_6640_180_255_link_5","ABB_6640_180_255_link_6"]
 		
 		#Robot dictionaries, all reference by name
 		self.robot_linkname={'ABB_6640_180_255':ABB_6640_180_255_link_names}
@@ -36,9 +36,9 @@ class Tess_Env(object):
 		
 
 		######tesseract environment setup:
-		with open(urdf_path+'abb_cell.urdf','r') as f:
+		with open(urdf_path+'.urdf','r') as f:
 			combined_urdf = f.read()
-		with open(urdf_path+'abb_cell.srdf','r') as f:
+		with open(urdf_path+'.srdf','r') as f:
 			combined_srdf = f.read()
 
 		self.t_env= Environment()
@@ -89,7 +89,8 @@ class Tess_Env(object):
 		tesseract_collision.flattenResults(result,result_vector)
 		###iterate all collision instances
 		for c in result_vector: 
-			if (robot_name in c.link_names[0] or robot_name in c.link_names[1]):
+			if (c.link_names[0] in self.robot_linkname[robot_name] or c.link_names[1] in self.robot_linkname[robot_name]):
+				print(c.link_names[0], c.link_names[1], c.distance)
 				return True
 
 		return False
@@ -110,23 +111,17 @@ class Tess_Env(object):
 
 def main():
 
-
-	t=Tess_Env('config/urdf/')				#create obj
-
+	t=Tess_Env('config/urdf/abb_cell')				#create obj
 	input("Press enter to quit")
 	#stop background checker
 
 def collision_test():
-	t=Tess_Env('config/urdf/')				#create obj
-	###place part in place
-	curve_pose=np.loadtxt('data/wood/baseline/curve_pose.csv',delimiter=',')
-	curve_pose[:3,-1]=curve_pose[:3,-1]/1000.
-	t.update_pose('curve_1',curve_pose)
+	t=Tess_Env('config/urdf/abb_cell')				#create obj
 
-	q=np.array([0,0.5,0.7,1,1,1.])
+
+	q=np.array([1.1,0.5,0.7,1,1,1.])
 	t.viewer_joints_update('ABB_6640_180_255',q)
-	curve_js=[q]
-	print(t.check_collision_single('ABB_6640_180_255','curve_1',curve_js))
+	print(t.check_collision_single('ABB_6640_180_255',q))
 
 	input("Press enter to quit")
 
