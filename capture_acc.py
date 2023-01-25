@@ -132,7 +132,7 @@ def capture_acc_collision():
 	robot_name='ABB_6640_180_255'
 	robot=robot_obj(robot_name,'config/abb_6640_180_255_robot_default_config.yml')
 	MotionProgramFunc=MotionProgram
-	robot_client=MotionProgramExecClient(base_url="http://127.0.0.1:80")
+	robot_client=MotionProgramExecClient(base_url="http://192.168.55.1:80")
 	t=Tess_Env('config/urdf/abb_cell')				#create obj
 
 	resolution=0.05 ###rad
