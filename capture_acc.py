@@ -24,7 +24,7 @@ def execute_abb(args):
 	(client,mp)=args
 	log_results = client.execute_motion_program(mp)
 
-	return log_results.data[:,0],log_results.data[:,2:8]
+	return log_results.data[:,0],np.radians(log_results.data[:,2:8])
 
 
 
@@ -135,7 +135,7 @@ def capture_acc_collision():
 	robot_client=MotionProgramExecClient(base_url="http://192.168.55.1:80")
 	t=Tess_Env('config/urdf/abb_cell')				#create obj
 
-	resolution=0.05 ###rad
+	resolution=0.3 ###rad
 	displacement=0.02
 
 	dict_table={}
