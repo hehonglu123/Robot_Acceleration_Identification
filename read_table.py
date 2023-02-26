@@ -1,5 +1,6 @@
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 
 # dic = ''
@@ -8,14 +9,16 @@ import numpy as np
 #             dic=i #string
 # dic = eval(dic) # this is orignal dict with instace dict
 
-# dic = pickle.load(open('6640/6640acc_new.pickle','rb'))
+dic = pickle.load(open('results/abb/sim/6640/6640.pickle','rb'))
 
-dic = pickle.load(open('test.pickle','rb'))
+# dic = pickle.load(open('test.pickle','rb'))
 
 
 ###surface plots of accleration limits, x as q2, y as q3
 x=[]
 y=[]
+x3=[]
+y3=[]
 q1_acc=[]
 q2_acc_p=[]
 q3_acc_p=[]
@@ -27,8 +30,11 @@ for key, value in dic.items():
    q1_acc.append(value[0])
    q2_acc_n.append(value[2])
    q2_acc_p.append(value[3])
-   q3_acc_n.append(value[4])
-   q3_acc_p.append(value[5])
+   if key[1]>-3:
+      x3.append(key[0])
+      y3.append(key[1])
+      q3_acc_n.append(value[4])
+      q3_acc_p.append(value[5])
    
    
 
@@ -52,19 +58,16 @@ plt.show()
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_trisurf(x, y, q2_acc_n, linewidth=0, antialiased=False)
+surf = ax.plot_trisurf(x, y, q2_acc_n, linewidth=0, antialiased=False, label='-')
+surf = ax.plot_trisurf(x, y, q2_acc_p, linewidth=0, antialiased=False, label='+')
+
 ax.set_xlabel('q2 (rad)')
 ax.set_ylabel('q3 (rad)')
 ax.set_zlabel('q2 acc (rad/s^2)')
-plt.title('Joint2 Acceleration Limit-')
-plt.show()
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_trisurf(x, y, q2_acc_p, linewidth=0, antialiased=False)
-ax.set_xlabel('q2 (rad)')
-ax.set_ylabel('q3 (rad)')
-ax.set_zlabel('q2 acc (rad/s^2)')
-plt.title('Joint2 Acceleration Limit+')
+plt.title('Joint2 Acceleration Limit')
+fake2Dline = mpl.lines.Line2D([0],[0], linestyle="none", c='b', marker = 'o')
+fake2Dline2 = mpl.lines.Line2D([0],[0], linestyle="none", c='orange', marker = 'o')
+ax.legend([fake2Dline,fake2Dline2], ['- direction','+ direction'], numpoints = 1)
 plt.show()
 
 
@@ -73,17 +76,14 @@ plt.show()
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_trisurf(x, y, q3_acc_n, linewidth=0, antialiased=False)
+surf = ax.plot_trisurf(x3, y3, q3_acc_n, linewidth=0, antialiased=False)
+surf = ax.plot_trisurf(x3, y3, q3_acc_p, linewidth=0, antialiased=False)
+
 ax.set_xlabel('q2 (rad)')
 ax.set_ylabel('q3 (rad)')
 ax.set_zlabel('q3 acc (rad/s^2)')
-plt.title('Joint3 Acceleration Limit-')
-plt.show()
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_trisurf(x, y, q3_acc_p, linewidth=0, antialiased=False)
-ax.set_xlabel('q2 (rad)')
-ax.set_ylabel('q3 (rad)')
-ax.set_zlabel('q3 acc (rad/s^2)')
-plt.title('Joint3 Acceleration Limit+')
+plt.title('Joint3 Acceleration Limit')
+fake2Dline = mpl.lines.Line2D([0],[0], linestyle="none", c='b', marker = 'o')
+fake2Dline2 = mpl.lines.Line2D([0],[0], linestyle="none", c='orange', marker = 'o')
+ax.legend([fake2Dline,fake2Dline2], ['- direction','+ direction'], numpoints = 1)
 plt.show()
