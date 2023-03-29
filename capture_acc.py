@@ -1,9 +1,11 @@
 from abb_motion_program_exec import *
+from dx200_motion_program_exec_client import *
+
 from pandas import *
 import json, pickle, copy
 from scipy.interpolate import interp1d
 
-from robot_def import *
+from robots_def import *
 from tes_env import *
 import matplotlib.pyplot as plt
 
@@ -26,7 +28,27 @@ def execute_abb(args):
 
 	return log_results.data[:,0],np.radians(log_results.data[:,2:8])
 
+def movej_motoman(q,v,z,args):
+	###abb moveabsj function
+	#q: joint angle in radians
+	#v: tcp speed
+	#z: blending zone
+	#args: (motionprogram,)
+	(client,)=args
+	mp.MoveJ(np.degrees(q),min(v,100),z)
+	return mp
 
+def execute_motoman(args):
+	###execute function
+	#args:(client,motionprogram)
+	(client,)=args
+	timestamp, curve_exe_js = client.execute_motion_program()
+
+	return timestamp, curve_exe_js
+
+
+movej=movej_motoman
+execute=execute_motoman
 
 ######################################################acceleration capture functions######################################################
 def linear_interp(x,y):
@@ -75,16 +97,16 @@ def exec(q_d,joint,displacement,MotionProgramFunc,robot_client):
 	q_init[joint]+=displacement
 	q_end[joint]-=displacement
 	
-	mp = MotionProgramFunc()
-	movej_abb(q_d,200,0,(mp,))
+	mp = MotionProgramFunc(robot)
+	movej(q_d,200,0,(mp,))
 
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
 	for i in range(4):
-		movej_abb(q_init,999999,10,(mp,))
-		movej_abb(q_end,999999,10,(mp,))
+		movej(q_init,999999,10,(mp,))
+		movej(q_end,999999,10,(mp,))
 	
-	timestamp,curve_exe_js=execute_abb((robot_client,mp))
+	timestamp,curve_exe_js=execute((robot_client,mp))
 
 	return get_acc(timestamp,curve_exe_js,q_d,joint)
 
@@ -128,12 +150,9 @@ def capture_acc():
 		f.write(str(dict_table))
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
-def capture_acc_collision():
-	robot_name='ABB_6640_180_255'
-	robot=robot_obj(robot_name,'config/abb_6640_180_255_robot_default_config.yml')
+def capture_acc_collision(robot_name,robot,robot_client,tesseract_environment):
+	
 	MotionProgramFunc=MotionProgram
-	robot_client=MotionProgramExecClient(base_url="http://192.168.55.1:80")
-	t=Tess_Env('config/urdf/abb_cell')				#create obj
 
 	resolution=0.3 ###rad
 	displacement=0.02
@@ -145,7 +164,7 @@ def capture_acc_collision():
 	for q2 in np.arange(robot.lower_limit[1]+displacement+0.01,robot.upper_limit[1]-displacement-0.01,resolution):
 		for q3 in np.arange(robot.lower_limit[2]+displacement+0.01,robot.upper_limit[2]-displacement-0.01,resolution):
 			###check for collision
-			if t.check_collision_single(robot_name,np.array([0,q2,q3,0,0,0])):
+			if tesseract_environment.check_collision_single(robot_name,np.array([0,q2,q3,0,0,0])):
 				continue
 			###initialize keys, and desired pose
 			dict_table[(q2,q3)]=[0]*6 		###[+j1,-j1,+j2,-j2,+j3,-j3]
@@ -170,5 +189,21 @@ def capture_acc_collision():
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
 
+def main_abb():
+	robot_name='ABB_6640_180_255'
+	robot=robot_obj(robot_name,'config/abb_6640_180_255_robot_default_config.yml')
+	robot_client=MotionProgramExecClient(base_url="http://192.168.55.1:80")
+	t=Tess_Env('config/urdf/abb_cell')
+	capture_acc_collision(robot_name,robot,robot_client,t)
+
+def main_motoman():
+	robot_name='MA2010_A0'
+	robot=robot_obj(robot_name,def_path='config/MA2010_A0_robot_default_config.yml',pulse2deg_file_path='config/MA2010_A0_pulse2deg.csv')
+	robot_client=MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg)
+	t=Tess_Env('config/urdf/motoman_cell')
+	capture_acc_collision(robot_name,robot,robot_client,t)
+
+
 if __name__ == '__main__':
-	capture_acc_collision()
+	
+	main_motoman()
