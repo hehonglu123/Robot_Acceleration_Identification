@@ -53,7 +53,7 @@ ax.set_xlabel('q2 (rad)')
 ax.set_ylabel('q3 (rad)')
 ax.set_zlabel('q1 acc (rad/s^2)')
 
-plt.title('Joint1 Acceleration Limit')
+plt.title('Joint1 Acceleration Limit', x=0.5, y=0.95)
 plt.show()
 
 fig = plt.figure()
