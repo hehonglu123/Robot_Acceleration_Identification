@@ -114,13 +114,13 @@ def exec_motion_motoman(q_d,joint,displacement,MotionProgramFunc,robot,robot_cli
 	q_init[joint]+=displacement
 	q_end[joint]-=displacement
 	
-	robot_client=movej(q_d,200,0,(robot_client,))
+	robot_client=movej(q_d,5,None,(robot_client,))
 
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
 	for i in range(4):
-		robot_client=movej(q_init,999999,10,(robot_client,))
-		robot_client=movej(q_end,999999,10,(robot_client,))
+		robot_client=movej(q_init,999999,None,(robot_client,))
+		robot_client=movej(q_end,999999,None,(robot_client,))
 	
 	timestamp,curve_exe_js=execute((robot_client,))
 
