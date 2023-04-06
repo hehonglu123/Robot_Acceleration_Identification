@@ -149,6 +149,9 @@ def main_motoman():
 	robot_jointname={'MA2010_A0':MA2010_joint_names,'MA1440_A0':MA1440_joint_names,'D500B':D500B_joint_names}
 	
 	t=Tess_Env('config/urdf/motoman_cell',robot_linkname,robot_jointname)				#create obj
+
+	q=np.array([1.1,0.5,0.7,1,1,1.])
+	t.viewer_joints_update('MA2010_A0',q)
 	input("Press enter to quit")
 
 if __name__ == '__main__':

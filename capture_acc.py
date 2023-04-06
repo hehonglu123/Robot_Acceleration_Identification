@@ -33,18 +33,20 @@ def movej_motoman(q,v,z,args):
 	#q: joint angle in radians
 	#v: tcp speed
 	#z: blending zone
-	#args: (motionprogram,)
+	#args: (client,)
 	(client,)=args
 	client.MoveJ(np.degrees(q),min(v,100),z)
 	return client
 
+name_map={'RB1':(0,6),'RB2':(6,12),'ST1':(12,14)}
+
 def execute_motoman(args):
 	###execute function
-	#args:(client,motionprogram)
+	#args:(client,)
 	(client,)=args
-	timestamp, curve_exe_js = client.execute_motion_program()
+	timestamp, curve_exe_js,_,_ = client.execute_motion_program()
 
-	return timestamp, curve_exe_js
+	return timestamp-timestamp[0], curve_exe_js[:,name_map[client.ROBOT_CHOICE][0]:name_map[client.ROBOT_CHOICE][1]]
 
 
 ######################################################acceleration capture functions######################################################
@@ -73,7 +75,7 @@ def lfilter(x, y):
 	return x[int(n/2):-int(n/2)+1], (y1+np.flip(y2,axis=0))/2
 
 
-def get_acc(timestamp,curve_exe_js,q,joint):
+def get_acc(timestamp,curve_exe_js,joint):
 	###filter
 	timestamp, curve_exe_js=lfilter(timestamp, curve_exe_js)
 	###get qdot, qddot
@@ -87,52 +89,51 @@ def get_acc(timestamp,curve_exe_js,q,joint):
 
 	return qddot_max_p, qddot_max_n
 
-def exec_motion_abb(q_d,joint,displacement,MotionProgramFunc,robot,robot_client):
+def exec_motion_abb(q_d,joint,displacement,robot,robot_client,zone=10):
 	###move joint at q_d configuration
 	q_init=copy.deepcopy(q_d)
 	q_end=copy.deepcopy(q_d)
 	q_init[joint]+=displacement
 	q_end[joint]-=displacement
 	
-	mp = MotionProgramFunc()
-	mp=movej(q_d,200,0,(mp,))
+	mp = MotionProgram()
+	mp=movej_abb(q_d,200,0,(mp,))
+	execute((robot_client,mp))
 
+	mp = MotionProgram()
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
 	for i in range(4):
-		mp=movej(q_init,999999,10,(mp,))
-		mp=movej(q_end,999999,10,(mp,))
+		mp=movej_abb(q_init,999999,zone,(mp,))
+		mp=movej_abb(q_end,999999,zone,(mp,))
 	
 	timestamp,curve_exe_js=execute((robot_client,mp))
 
-	return get_acc(timestamp,curve_exe_js,q_d,joint)
+	return get_acc(timestamp,curve_exe_js,joint)
 
-def exec_motion_motoman(q_d,joint,displacement,MotionProgramFunc,robot,robot_client):
+def exec_motion_motoman(q_d,joint,displacement,robot,robot_client,zone=None):
 	###move joint at q_d configuration
 	q_init=copy.deepcopy(q_d)
 	q_end=copy.deepcopy(q_d)
 	q_init[joint]+=displacement
 	q_end[joint]-=displacement
 	
-	robot_client=movej(q_d,5,None,(robot_client,))
+	robot_client=movej_motoman(q_d,5,None,(robot_client,))
+	execute((robot_client,))
 
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
 	for i in range(4):
-		robot_client=movej(q_init,999999,None,(robot_client,))
-		robot_client=movej(q_end,999999,None,(robot_client,))
+		robot_client=movej_motoman(q_init,999999,zone,(robot_client,))
+		robot_client=movej_motoman(q_end,999999,zone,(robot_client,))
 	
 	timestamp,curve_exe_js=execute((robot_client,))
 
-	return get_acc(timestamp,curve_exe_js,q_d,joint)
+	return get_acc(timestamp,curve_exe_js,joint)
 
 
 
-def capture_acc(robot_name,robot,robot_client):
-	MotionProgramFunc=MotionProgram
-
-	resolution=0.05 ###rad
-	displacement=0.02
+def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution):
 
 	dict_table={}
 	directions=[-1,1]
@@ -146,14 +147,14 @@ def capture_acc(robot_name,robot,robot_client):
 			q_d=[0,q2,q3,0,0,0]
 
 			#measure first joint first
-			qddot_max,_=exec(q_d,0,displacement,MotionProgramFunc,robot,robot_client)
+			qddot_max,_=exec_motion(q_d,0,displacement,robot,robot_client,zone)
 			###update dict
 			dict_table[(q2,q3)][0]=qddot_max
 			dict_table[(q2,q3)][1]=qddot_max
 
 			for joint in range(1,3):
 				###move first q2 and q3
-				qddot_max_p,qddot_max_n=exec_motion(q_d,joint,displacement,MotionProgramFunc,robot,robot_client)
+				qddot_max_p,qddot_max_n=exec_motion(q_d,joint,displacement,robot,robot_client,zone)
 				###update dict
 				dict_table[(q2,q3)][2*joint]=qddot_max_p
 				dict_table[(q2,q3)][2*joint+1]=qddot_max_n
@@ -163,12 +164,8 @@ def capture_acc(robot_name,robot,robot_client):
 		f.write(str(dict_table))
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
-def capture_acc_collision(robot_name,robot,robot_client,tesseract_environment):
+def capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,tesseract_environment):
 	
-	MotionProgramFunc=MotionProgram
-
-	resolution=0.3 ###rad
-	displacement=0.02
 
 	dict_table={}
 	directions=[-1,1]
@@ -184,14 +181,14 @@ def capture_acc_collision(robot_name,robot,robot_client,tesseract_environment):
 			q_d=[0,q2,q3,0,0,0]
 
 			#measure first joint first
-			qddot_max,_=exec_motion(q_d,0,displacement,MotionProgramFunc,robot,robot_client)
+			qddot_max,_=exec_motion(q_d,0,displacement,robot,robot_client,zone)
 			###update dict
 			dict_table[(q2,q3)][0]=qddot_max
 			dict_table[(q2,q3)][1]=qddot_max
 
 			for joint in range(1,3):
 				###move first q2 and q3
-				qddot_max_p,qddot_max_n=exec_motion(q_d,joint,displacement,MotionProgramFunc,robot,robot_client)
+				qddot_max_p,qddot_max_n=exec_motion(q_d,joint,displacement,robot,robot_client,zone)
 				###update dict
 				dict_table[(q2,q3)][2*joint]=qddot_max_p
 				dict_table[(q2,q3)][2*joint+1]=qddot_max_n
@@ -202,7 +199,6 @@ def capture_acc_collision(robot_name,robot,robot_client,tesseract_environment):
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
 
-movej=movej_motoman
 execute=execute_motoman
 exec_motion=exec_motion_motoman
 
@@ -219,14 +215,14 @@ def main_abb():
 	
 	t=Tess_Env('config/urdf/abb_cell',robot_linkname,robot_jointname)
 
-	capture_acc_collision(robot_name,robot,robot_client,t)
+	capture_acc_collision(robot_name,robot,robot_client,10,t)
 
 def main_motoman():
 	robot_name='MA2010_A0'
 	robot=robot_obj(robot_name,def_path='config/MA2010_A0_robot_default_config.yml',pulse2deg_file_path='config/MA2010_A0_pulse2deg.csv')
 	robot_client=MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg)
 	#link and joint names in urdf
-	MA2010_link_names=["MA2010_base_link","MA2010_link_1_s","MA2010_link_2_l","MA2010_link_3_u","MA2010_link_4_r","MA2010_link_5_b","MA2010_link_6_t"]
+	MA2010_link_names=["MA2010_base_link","MA2010_link_1_s","MA2010_link_2_l","MA2010_link_3_u","MA2010_link_4_r","MA2010_link_5_b","MA2010_link_6_t","weldgun","MA2010_filler"]
 	MA2010_joint_names=["MA2010_joint_1_s","MA2010_joint_2_l","MA2010_joint_3_u","MA2010_joint_4_r","MA2010_joint_5_b","MA2010_joint_6_t"]
 
 	#Robot dictionaries, all reference by name
@@ -235,8 +231,43 @@ def main_motoman():
 	
 	t=Tess_Env('config/urdf/motoman_cell',robot_linkname,robot_jointname)
 
-	capture_acc_collision(robot_name,robot,robot_client,t)
+	displacement=0.05
+	resolution=0.3
+	zone=8
+	capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t)
 
+
+def osc_test():
+	robot_name='MA2010_A0'
+	robot=robot_obj(robot_name,def_path='config/MA2010_A0_robot_default_config.yml',pulse2deg_file_path='config/MA2010_A0_pulse2deg.csv')
+	robot_client=MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg)
+
+	q_d=np.zeros(6)
+	displacement=0.02
+
+	zone=8
+	joint=2
+	###move joint at q_d configuration
+	q_init=copy.deepcopy(q_d)
+	q_end=copy.deepcopy(q_d)
+	q_init[joint]+=displacement
+	q_end[joint]-=displacement
+	
+	robot_client=movej_motoman(q_d,5,None,(robot_client,))
+
+	j_init=jointtarget(np.degrees(q_init),[0]*6)
+	j_end=jointtarget(np.degrees(q_end),[0]*6)
+	for i in range(4):
+		robot_client=movej_motoman(q_init,999999,zone,(robot_client,))
+		robot_client=movej_motoman(q_end,999999,zone,(robot_client,))
+	
+	timestamp,curve_exe_js=execute((robot_client,))
+	print(get_acc(timestamp,curve_exe_js,joint))
+	plt.title('Joint %i Oscillation'%(joint+1))
+	plt.xlabel('Time (s)')
+	plt.ylabel('Joint Angle (rad)')
+	plt.plot(timestamp,curve_exe_js[:,joint])
+	plt.show()
 
 if __name__ == '__main__':
 	

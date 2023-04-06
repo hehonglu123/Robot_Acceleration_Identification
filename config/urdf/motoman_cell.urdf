@@ -149,6 +149,23 @@
     </collision>
   </link>
 
+  <link name="MA2010_filler">
+    <visual>
+      <geometry>
+        <box size="0.4 0.2 0.3"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.72941176470588237 0.14901960784313725 0.1490196078431373 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.5 0.3"/>
+      </geometry>
+    </collision>
+  </link>
+
+
   <!-- end of link list -->
   <!-- joint list -->
   <joint name="MA2010_joint_1_s" type="revolute">
@@ -200,6 +217,12 @@
     <axis xyz="0 0 1"/>
   </joint>
   <!-- end of joint list -->
+  <joint name="filler_joint" type="fixed">
+    <parent link="MA2010_link_2_l"/>
+    <child link="MA2010_filler"/>
+    <origin rpy="0 0 0" xyz="0.0 -0.36 0.4"/>
+    <axis xyz="0 0 0"/>
+  </joint>
   <link name="weldgun">
     <visual>
       <geometry>
