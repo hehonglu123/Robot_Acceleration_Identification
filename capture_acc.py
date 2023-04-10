@@ -231,9 +231,9 @@ def main_motoman():
 	
 	t=Tess_Env('config/urdf/motoman_cell',robot_linkname,robot_jointname)
 
-	displacement=0.05
+	displacement=0.03
 	resolution=0.3
-	zone=8
+	zone=None
 	capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t)
 
 
@@ -243,9 +243,9 @@ def osc_test():
 	robot_client=MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg)
 
 	q_d=np.zeros(6)
-	displacement=0.02
+	displacement=0.03
 
-	zone=8
+	zone=None
 	joint=2
 	###move joint at q_d configuration
 	q_init=copy.deepcopy(q_d)
