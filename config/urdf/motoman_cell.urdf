@@ -22,7 +22,28 @@
   <joint name="MA1440_pose" type="fixed">
     <parent link="world"/>
     <child link="MA1440_base_link"/>
-    <origin rpy="0.0 0.0 3.14159" xyz="4 0 0.908"/><!--MA2010 pedestal-->
+    <origin rpy="0.0 0.0 3.14159" xyz="2.689552 -0.39515 0.908"/><!--MA2010 pedestal-->
+  </joint>
+
+  <link name="Ground">
+    <visual>
+      <geometry>
+        <box size="4.953 6.4 0.01"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="4.953 6.4 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Ground_pose" type="fixed">
+    <parent link="world"/>
+    <child link="Ground"/>
+    <origin rpy="0.0 0.0 0" xyz="1.3462 0 -0.005"/>
   </joint>
 
 

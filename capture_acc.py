@@ -26,7 +26,7 @@ def execute_abb(args):
 	(client,mp)=args
 	log_results = client.execute_motion_program(mp)
 
-	return log_results.data[:,0],np.radians(log_results.data[:,2:8])
+	return log_results.data[:,0],np.radians(log_results.data[:,2:8]), log_results.data[:,1]
 
 def movej_motoman(q,v,z,args):
 	###abb moveabsj function
@@ -44,9 +44,9 @@ def execute_motoman(args):
 	###execute function
 	#args:(client,)
 	(client,)=args
-	timestamp, curve_exe_js,_,_ = client.execute_motion_program()
+	timestamp, curve_exe_js,job_line,_ = client.execute_motion_program()
 
-	return timestamp-timestamp[0], curve_exe_js[:,name_map[client.ROBOT_CHOICE][0]:name_map[client.ROBOT_CHOICE][1]]
+	return timestamp-timestamp[0], curve_exe_js[:,name_map[client.ROBOT_CHOICE][0]:name_map[client.ROBOT_CHOICE][1]], job_line
 
 
 ######################################################acceleration capture functions######################################################
@@ -107,7 +107,7 @@ def exec_motion_abb(q_d,joint,displacement,robot,robot_client,zone=10):
 		mp=movej_abb(q_init,999999,zone,(mp,))
 		mp=movej_abb(q_end,999999,zone,(mp,))
 	
-	timestamp,curve_exe_js=execute((robot_client,mp))
+	timestamp,curve_exe_js,cmd_num=execute((robot_client,mp))
 
 	return get_acc(timestamp,curve_exe_js,joint)
 
@@ -119,7 +119,7 @@ def exec_motion_motoman(q_d,joint,displacement,robot,robot_client,zone=None):
 	q_end[joint]-=displacement
 	
 	robot_client=movej_motoman(q_d,5,None,(robot_client,))
-	execute((robot_client,))
+	# execute((robot_client,))
 
 	j_init=jointtarget(np.degrees(q_init),[0]*6)
 	j_end=jointtarget(np.degrees(q_end),[0]*6)
@@ -127,13 +127,15 @@ def exec_motion_motoman(q_d,joint,displacement,robot,robot_client,zone=None):
 		robot_client=movej_motoman(q_init,999999,zone,(robot_client,))
 		robot_client=movej_motoman(q_end,999999,zone,(robot_client,))
 	
-	timestamp,curve_exe_js=execute((robot_client,))
+	timestamp,curve_exe_js,job_line=execute((robot_client,))
+	idx = np.absolute(job_line-2).argmin()
+	start_idx=np.where(job_line==job_line[idx])[0][0]
 
-	return get_acc(timestamp,curve_exe_js,joint)
+	return get_acc(timestamp[start_idx:],curve_exe_js[start_idx:],joint)
 
 
 
-def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution):
+def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution,q0_default=0):
 
 	dict_table={}
 	directions=[-1,1]
@@ -144,7 +146,7 @@ def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution):
 			###initialize keys, and desired pose
 
 			dict_table[(q2,q3)]=[0]*6 		###[+j1,-j1,+j2,-j2,+j3,-j3]
-			q_d=[0,q2,q3,0,0,0]
+			q_d=[q0_default,q2,q3,0,0,0]
 
 			#measure first joint first
 			qddot_max,_=exec_motion(q_d,0,displacement,robot,robot_client,zone)
@@ -164,7 +166,7 @@ def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution):
 		f.write(str(dict_table))
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
-def capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,tesseract_environment):
+def capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,tesseract_environment,q0_default=0):
 	
 
 	dict_table={}
@@ -178,7 +180,7 @@ def capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolu
 				continue
 			###initialize keys, and desired pose
 			dict_table[(q2,q3)]=[0]*6 		###[+j1,-j1,+j2,-j2,+j3,-j3]
-			q_d=[0,q2,q3,0,0,0]
+			q_d=[q0_default,q2,q3,0,0,0]
 
 			#measure first joint first
 			qddot_max,_=exec_motion(q_d,0,displacement,robot,robot_client,zone)
@@ -234,7 +236,8 @@ def main_motoman():
 	displacement=0.03
 	resolution=0.3
 	zone=None
-	capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t)
+	q0_default=0.17
+	capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t,q0_default=q0_default)
 
 
 def osc_test():
@@ -261,14 +264,17 @@ def osc_test():
 		robot_client=movej_motoman(q_init,999999,zone,(robot_client,))
 		robot_client=movej_motoman(q_end,999999,zone,(robot_client,))
 	
-	timestamp,curve_exe_js=execute((robot_client,))
-	print(get_acc(timestamp,curve_exe_js,joint))
+	timestamp,curve_exe_js, job_line=execute((robot_client,))
+	idx = np.absolute(job_line-2).argmin()
+	start_idx=np.where(job_line==job_line[idx])[0][0]
+
+	print(get_acc(timestamp[start_idx:],curve_exe_js[start_idx:],joint))
 	plt.title('Joint %i Oscillation'%(joint+1))
 	plt.xlabel('Time (s)')
 	plt.ylabel('Joint Angle (rad)')
-	plt.plot(timestamp,curve_exe_js[:,joint])
+	plt.plot(timestamp[start_idx:],curve_exe_js[start_idx:,joint])
 	plt.show()
 
 if __name__ == '__main__':
-	
+	# osc_test()
 	main_motoman()

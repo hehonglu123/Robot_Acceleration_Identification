@@ -9,9 +9,9 @@ import numpy as np
 #             dic=i #string
 # dic = eval(dic) # this is orignal dict with instace dict
 
-dic = pickle.load(open('results/abb/sim/6640/6640.pickle','rb'))
+# dic = pickle.load(open('results/abb/sim/6640/6640.pickle','rb'))
 
-# dic = pickle.load(open('test.pickle','rb'))
+dic = pickle.load(open('test.pickle','rb'))
 
 
 ###surface plots of accleration limits, x as q2, y as q3
