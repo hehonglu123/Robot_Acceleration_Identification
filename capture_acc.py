@@ -166,6 +166,14 @@ def capture_acc(robot_name,robot,robot_client,zone,displacement,resolution,q0_de
 		f.write(str(dict_table))
 	pickle.dump(dict_table, open('test.pickle','wb'))
 
+def capture_acc_456(robot_name,robot,robot_client,zone,displacement,resolution,q_d=np.zeros(6)):
+	acc=[]
+	for q in range(3,6):
+		qddot_max_p,qddot_max_n=exec_motion(q_d,q,displacement,robot,robot_client,zone)
+		print(qddot_max_p,qddot_max_n)
+		acc.append(qddot_max_p)
+	return acc
+
 def capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,tesseract_environment,q0_default=0):
 	
 
@@ -237,8 +245,9 @@ def main_motoman():
 	resolution=0.3
 	zone=None
 	q0_default=0.17
-	capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t,q0_default=q0_default)
-
+	# capture_acc_collision(robot_name,robot,robot_client,zone,displacement,resolution,t,q0_default=q0_default)
+	print(capture_acc_456(robot_name,robot,robot_client,zone,displacement,resolution))
+	
 
 def osc_test():
 	robot_name='MA2010_A0'
