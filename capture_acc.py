@@ -2,7 +2,7 @@ from abb_motion_program_exec import *
 from dx200_motion_program_exec_client import *
 
 from pandas import *
-import json, pickle, copy
+import json, pickle, copy, argparse
 from scipy.interpolate import interp1d
 
 from robots_def import *
@@ -283,6 +283,36 @@ def osc_test():
 	plt.ylabel('Joint Angle (rad)')
 	plt.plot(timestamp[start_idx:],curve_exe_js[start_idx:,joint])
 	plt.show()
+
+
+def main():
+	#Accept the names of the webcams and the nodename from command line
+	parser = argparse.ArgumentParser(description="Robot Acceleration Capture")
+	parser.add_argument("--robot-name",type=str,default='MA2010_A0')
+	parser.add_argument("--robot-info-file",type=str,default='config/MA2010_A0_robot_default_config.yml')
+	parser.add_argument("--pulse2deg-file",type=str,default='config/MA2010_A0_pulse2deg.csv')
+	parser.add_argument("--displacement", type=float, default=0.03, help="oscillation amplitude (rad)")
+	parser.add_argument("--resolution", type=float, default=0.3, help="Sampling Joint Resolution (rad)")
+	parser.add_argument("--zone", type=float, default=None, help="blending zone")
+	parser.add_argument("--q0_default", type=float, default=0., help="default joint 1 position")
+	parser.add_argument("--robot-ip",type=str,default='192.168.55.1')
+	parser.add_argument("--urdf",type=str,default=None)
+	args, _ = parser.parse_known_args()
+
+	robot=robot_obj(robot_name,def_path=args.robot_info_file,pulse2deg_file_path=args.pulse2deg_file)
+	
+	robot_client_map={'MA2010_A0':MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg),\
+						'MA1440_A0':MotionProgramExecClient(ROBOT_CHOICE='RB2',pulse2deg=robot.pulse2deg),\
+						'ABB_6640_180_255':MotionProgramExecClient(base_url="http://"+args.robot_ip+":80"),\
+						'ABB_1200':MotionProgramExecClient(base_url="http://"+args.robot_ip+":80")}
+
+	if type(args.urdf) is not None:
+		t=Tess_Env(args.urdf,robot_linkname,robot_jointname)
+		capture_acc_collision(args.robot_name,robot,robot_client_map[args.robot_name],\
+			args.zone,args.displacement,args.resolution,t,q0_default=q0_default)
+	else:
+		capture_acc(args.robot_name,robot,robot_client_map[args.robot_name],\
+			args.zone,args.displacement,args.resolution,q0_default=q0_default)
 
 if __name__ == '__main__':
 	# osc_test()
