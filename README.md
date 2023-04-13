@@ -14,6 +14,6 @@ the shoulder and elbow joints, and joint 2 and 3 acceleration limits also depend
 ## Results
 For Joint 4, 5, and 6, acceleration is stored as constants. For the remaining, a dictionary is used with $(q_2,q_3)$ as keys and $(\ddot{q_1},\ddot{q_2},\ddot{q_3})$ are the value.
 
-
+![](images/j1_acc.png）
 ## Usage
 
