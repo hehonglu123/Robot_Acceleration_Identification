@@ -51,7 +51,7 @@
   <link name="MA2010_pedestal">
     <visual>
       <geometry>
-        <box size="0.55 0.6858 0.762"/>
+        <box size="0.75 0.6858 0.762"/>
       </geometry>
       <material name="">
         <color rgba="0.12941176470588237 0.14901960784313725 0.7490196078431373 1.0"/>
@@ -59,7 +59,7 @@
     </visual>
     <collision>
       <geometry>
-        <box size="0.55 0.6858 0.762"/>        
+        <box size="0.75 0.6858 0.762"/>        
       </geometry>
     </collision>
   </link>
