@@ -10,7 +10,6 @@ import RobotRaconteur as RR
 RRN=RR.RobotRaconteurNode.s
 import yaml, time, traceback, threading, sys, json
 import numpy as np
-from qpsolvers import solve_qp
 from scipy.optimize import fminbound
 
 from gazebo_model_resource_locator import GazeboModelResourceLocator
