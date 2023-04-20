@@ -46,6 +46,27 @@
     <origin rpy="0.0 0.0 0" xyz="1.3462 0 -0.005"/>
   </joint>
 
+  <link name="Wall1">
+    <visual>
+      <geometry>
+        <box size="0.01 6.4 4"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1490196078431373 0.14901960784313725 0.72941176470588237 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.01 6.4 4"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Wall1_pose" type="fixed">
+    <parent link="world"/>
+    <child link="Wall1"/>
+    <origin rpy="0.0 0.0 0" xyz="3.44 0 2"/>
+  </joint>
+
 
   <!-- MA2010 list -->
   <link name="MA2010_pedestal">
@@ -458,7 +479,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="MA1440_tool0"/>
+  
   <!-- end of link list -->
   <!-- joint list -->
   <joint name="MA1440_joint_pedestal" type="fixed">
@@ -510,10 +531,26 @@
     <axis xyz="-1 0 0"/>
     <limit effort="14.80" lower="-6.2832" upper="6.2832" velocity="10.6465"/>
   </joint>
-  <joint name="MA1440_joint_6_t-tool0" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0"/>
+  <link name="scanner">
+    <visual>
+      <geometry>
+        <box size="0.3 0.2 0.2"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.12941176470588237 0.88 0.7490196078431373 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.3 0.2 0.2"/>        
+      </geometry>
+    </collision>
+  </link>
+  <joint name="scanner_joint" type="fixed">
     <parent link="MA1440_link_6_t"/>
-    <child link="MA1440_tool0"/>
+    <child link="scanner"/>
+    <origin rpy="0 0 0" xyz="0.25 0 0"/>
+    <axis xyz="0 0 0"/>
   </joint>
 
 

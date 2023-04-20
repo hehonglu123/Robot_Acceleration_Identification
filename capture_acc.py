@@ -316,6 +316,7 @@ def main():
 
 	if type(args.urdf_path) is not None:
 		t=Tess_Env(args.urdf_path,{args.robot_name:link_names[args.robot_name]},{args.robot_name:joint_names[args.robot_name]})
+		t.t_env.setState(joint_names['MA2010_A0'], np.array([0,0,1.57,0,0,0]))
 		dict_table,acc456=capture_acc_collision(robot,robot_client_map[args.robot_name],\
 			args.zone,args.displacement,args.resolution,t,q0_default=args.q0_default)
 	else:

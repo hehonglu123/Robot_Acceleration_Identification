@@ -1,0 +1,1 @@
+python capture_acc.py --robot-name=MA1440_A0 --robot-info-file=config/MA1440_A0_robot_default_config.yml --pulse2deg-file=config/MA1440_A0_pulse2deg.csv --displacement=0.05 --resolution=0.5 --q0-default=0.5 --robot-ip=192.168.1.31 --urdf-path=config/urdf/motoman_cell
