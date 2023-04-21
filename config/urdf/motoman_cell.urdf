@@ -534,7 +534,7 @@
   <link name="scanner">
     <visual>
       <geometry>
-        <box size="0.3 0.2 0.2"/>
+        <box size="0.3 0.2 0.25"/>
       </geometry>
       <material name="">
         <color rgba="0.12941176470588237 0.88 0.7490196078431373 1.0"/>
@@ -542,14 +542,14 @@
     </visual>
     <collision>
       <geometry>
-        <box size="0.3 0.2 0.2"/>        
+        <box size="0.3 0.2 0.25"/>        
       </geometry>
     </collision>
   </link>
   <joint name="scanner_joint" type="fixed">
     <parent link="MA1440_link_6_t"/>
     <child link="scanner"/>
-    <origin rpy="0 0 0" xyz="0.25 0 0"/>
+    <origin rpy="0 0 0" xyz="0.25 0 -0.05"/>
     <axis xyz="0 0 0"/>
   </joint>
 
