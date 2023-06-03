@@ -131,6 +131,15 @@ def exec_motion_motoman(q_d,joint,displacement,robot,robot_client,zone=None):
 
 	return get_acc(timestamp[start_idx:],curve_exe_js[start_idx:],joint)
 
+def robot_client_map(robot,robot_ip):
+	if 'MA' in robot.robot_name:
+		if '2010' in robot.robot_name:
+			return motoman.MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg,IP=robot_ip)
+		if '1440' in robot.robot_name:
+			return motoman.MotionProgramExecClient(ROBOT_CHOICE='RB2',pulse2deg=robot.pulse2deg,IP=robot_ip)
+	if 'ABB' in robot.robot_name:
+		return abb.MotionProgramExecClient(base_url="http://"+robot_ip+":80")
+
 
 
 def capture_acc(robot,robot_client,zone,displacement,resolution,q0_default=0):
@@ -309,17 +318,16 @@ def main():
 
 	robot=robot_obj(args.robot_name,def_path=args.robot_info_file,pulse2deg_file_path=args.pulse2deg_file)
 
-	robot_client_map={'MA2010_A0':motoman.MotionProgramExecClient(ROBOT_CHOICE='RB1',pulse2deg=robot.pulse2deg,IP=args.robot_ip),\
-						'MA1440_A0':motoman.MotionProgramExecClient(ROBOT_CHOICE='RB2',pulse2deg=robot.pulse2deg,IP=args.robot_ip),\
-						'ABB_6640_180_255':abb.MotionProgramExecClient(base_url="http://"+args.robot_ip+":80"),\
-						'ABB_1200_5_90':abb.MotionProgramExecClient(base_url="http://"+args.robot_ip+":80")}
+	
 
 	if type(args.urdf_path) is not None:
 		t=Tess_Env(args.urdf_path,{args.robot_name:link_names[args.robot_name]},{args.robot_name:joint_names[args.robot_name]})
-		dict_table,acc456=capture_acc_collision(robot,robot_client_map[args.robot_name],\
+		###hard coded robot first joint position to avoid collision
+		t.t_env.setState(joint_names['MA2010_A0'], np.array([0,0,1.57,0,0,0]))
+		dict_table,acc456=capture_acc_collision(robot,robot_client_map(robot,args.robot_ip),\
 			args.zone,args.displacement,args.resolution,t,q0_default=args.q0_default)
 	else:
-		dict_table,acc456=capture_acc(robot,robot_client_map[args.robot_name],\
+		dict_table,acc456=capture_acc(robot,robot_client_map(robot,args.robot_ip),\
 			args.zone,args.displacement,args.resolution,q0_default=args.q0_default)
 
 	with open(r'test.txt','w+') as f:

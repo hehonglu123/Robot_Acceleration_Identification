@@ -10,7 +10,6 @@ import RobotRaconteur as RR
 RRN=RR.RobotRaconteurNode.s
 import yaml, time, traceback, threading, sys, json
 import numpy as np
-from qpsolvers import solve_qp
 from scipy.optimize import fminbound
 
 from gazebo_model_resource_locator import GazeboModelResourceLocator
@@ -150,7 +149,8 @@ def main_motoman():
 	
 	t=Tess_Env('config/urdf/motoman_cell',robot_linkname,robot_jointname)				#create obj
 
-	q=np.array([1.1,0.5,0.7,1,1,1.])
+	# q=np.array([1.1,0.5,0.7,1,1,1.])
+	q=np.array([0,0,1.57,0,0,0])
 	t.viewer_joints_update('MA2010_A0',q)
 	input("Press enter to quit")
 

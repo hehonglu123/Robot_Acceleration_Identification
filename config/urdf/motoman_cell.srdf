@@ -81,6 +81,9 @@
   <disable_collisions link1="MA1440_link_2_l" link2="MA1440_link_4_r" reason="Adjacent" />
   <disable_collisions link1="MA1440_link_3_u" link2="MA1440_link_5_b" reason="Adjacent" />
   <disable_collisions link1="MA1440_link_4_r" link2="MA1440_link_6_t" reason="Adjacent" />
+  <disable_collisions link1="MA1440_link_4_r" link2="scanner" reason="Adjacent" />
+  <disable_collisions link1="MA1440_link_5_b" link2="scanner" reason="Adjacent" />
+  <disable_collisions link1="MA1440_link_6_t" link2="scanner" reason="Adjacent" />
 
   <disable_collisions link1="D500B_base_link" link2="D500B_link_1" reason="Adjacent" />
   <disable_collisions link1="D500B_link_1" link2="D500B_link_2" reason="Adjacent" />
