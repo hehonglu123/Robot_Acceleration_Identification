@@ -9,14 +9,16 @@ import numpy as np
 #             dic=i #string
 # dic = eval(dic) # this is orignal dict with instace dict
 
-# dic = pickle.load(open('results/abb/sim/6640/6640.pickle','rb'))
-dic = pickle.load(open('results/motoman/real/MA2010.pickle','rb'))
+dic = pickle.load(open('results/abb/sim/1200/1200.pickle','rb'))
+# dic = pickle.load(open('results/motoman/real/MA2010.pickle','rb'))
 # dic = pickle.load(open('results/test.pickle','rb'))
 
 
 ###surface plots of accleration limits, x as q2, y as q3
 x=[]
 y=[]
+x2=[]
+y2=[]
 x3=[]
 y3=[]
 q1_acc=[]
@@ -28,9 +30,15 @@ for key, value in dic.items():
    x.append(key[0])
    y.append(key[1])
    q1_acc.append(value[0])
-   q2_acc_n.append(value[2])
-   q2_acc_p.append(value[3])
-   if key[1]>-3:
+
+   ###manual thresholding the boundary for bad data
+   if key[0]>-1.6 and key[0]<2.1:
+      x2.append(key[0])
+      y2.append(key[1])
+      q2_acc_n.append(value[2])
+      q2_acc_p.append(value[3])
+
+   if key[1]<1 and key[1]>-3.2:
       x3.append(key[0])
       y3.append(key[1])
       q3_acc_n.append(value[4])
@@ -58,8 +66,8 @@ plt.show()
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_trisurf(x, y, q2_acc_n, linewidth=0, antialiased=False, label='-')
-surf = ax.plot_trisurf(x, y, q2_acc_p, linewidth=0, antialiased=False, label='+')
+surf = ax.plot_trisurf(x2, y2, q2_acc_n, linewidth=0, antialiased=False, label='-')
+surf = ax.plot_trisurf(x2, y2, q2_acc_p, linewidth=0, antialiased=False, label='+')
 
 ax.set_xlabel('q2 (rad)')
 ax.set_ylabel('q3 (rad)')
