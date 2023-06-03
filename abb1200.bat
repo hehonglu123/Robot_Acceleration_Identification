@@ -1,0 +1,1 @@
+python capture_acc.py --robot-name=ABB_1200_5_90 --robot-info-file=config/ABB_1200_5_90_robot_default_config.yml --displacement=0.07 --resolution=0.5 --zone=10 --robot-ip=127.0.0.1 
