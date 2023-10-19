@@ -78,7 +78,7 @@ class Tess_Env(object):
 		result = tesseract_collision.ContactResultMap()
 		contacts = self.manager.contactTest(result,tesseract_collision.ContactRequest(tesseract_collision.ContactTestType_ALL))
 		result_vector = tesseract_collision.ContactResultVector()
-		tesseract_collision.flattenResults(result,result_vector)
+		result.flattenMoveResults(result_vector)
 		###iterate all collision instances
 		for c in result_vector: 
 			if (c.link_names[0] in self.robot_linkname[robot_name] or c.link_names[1] in self.robot_linkname[robot_name]):
