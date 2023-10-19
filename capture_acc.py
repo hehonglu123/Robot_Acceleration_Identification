@@ -221,7 +221,7 @@ def capture_acc_collision(robot,robot_client,zone,displacement,resolution,tesser
 
 #####ROBOT SPECIFIC MAPPING
 
-name_map={'MA2010_A0':(0,6),'MA1440_A0':(6,12)}
+name_map={'RB1':(0,6),'RB2':(6,12)}
 robot_choice={'MA2010_A0':'RB1','MA1440_A0':'RB2'}
 
 execute={'MA2010_A0':execute_motoman,'MA1440_A0':execute_motoman,'ABB_6640_180_255':execute_abb,'ABB_1200_5_90':execute_abb}

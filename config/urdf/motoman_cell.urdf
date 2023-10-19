@@ -265,10 +265,10 @@
     <origin rpy="0 0 0" xyz="0.0 -0.36 0.4"/>
     <axis xyz="0 0 0"/>
   </joint>
-  <link name="weldgun">
+  <link name="torch">
     <visual>
       <geometry>
-        <mesh filename="model://MA_2010_A0/meshes/visual/weldgun.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="model://MA_2010_A0/meshes/visual/torch.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="">
         <color rgba="0.12941176470588237 0.88 0.7490196078431373 1.0"/>
@@ -276,13 +276,13 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="model://MA_2010_A0/meshes/collision/weldgun.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="model://MA_2010_A0/meshes/collision/torch.stl" scale="0.001 0.001 0.001"/>
       </geometry>
     </collision>
   </link>
-  <joint name="weldgun_joint" type="fixed">
+  <joint name="torch_joint" type="fixed">
     <parent link="MA2010_link_6_t"/>
-    <child link="weldgun"/>
+    <child link="torch"/>
     <origin rpy="0 1.57 0" xyz="0.1 0 0"/>
     <axis xyz="0 0 0"/>
   </joint>
