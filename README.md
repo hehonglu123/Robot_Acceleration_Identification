@@ -14,9 +14,32 @@ the shoulder and elbow joints, and joint 2 and 3 acceleration limits also depend
 ## Results
 For Joint 4, 5, and 6, acceleration is stored as constants. For the remaining, a dictionary is used with $(q_2,q_3)$ as keys and $(\ddot{q_1},\ddot{q_2},\ddot{q_3})$ are the value.
 
-![](images/j1_acc.png)
-![](images/j2_acc.png)
-![](images/j3_acc.png)
+| ABB6640                 | 1     | 2     | 3     | 4     | 5     | 6     |
+|-------------------------|-------|-------|-------|-------|-------|-------|
+| Velocity ($rad/s$)      | 1.745 | 1.571 | 1.571 | 3.316 | 2.443 | 3.316 |
+| Acceleration ($rad/s^2$)| *     | *     | *     | 42.5  | 36.8  | 50.5  |
+
+<img src="results/abb/abb6640/j1_acc.png" alt="Alt Text" width="300" height="auto">
+<img src="results/abb/abb6640/j2_acc.png" alt="Alt Text" width="260" height="auto">
+<img src="results/abb/abb6640/j3_acc.png" alt="Alt Text" width="270" height="auto">
+
+| ABB1200                 | 1     | 2     | 3     | 4     | 5     | 6     |
+|-------------------------|-------|-------|-------|-------|-------|-------|
+| Velocity ($rad/s$)      | 5.027 | 4.189 | 5.184 | 6.981 | 7.069 | 10.472|
+| Acceleration ($rad/s^2$)| *     | *     | *     | 108.2 | 145.4 | 153.5 |
+
+<img src="results/abb/abb1200/j1_acc.png" alt="Alt Text" width="300" height="auto">
+<img src="results/abb/abb1200/j2_acc.png" alt="Alt Text" width="300" height="auto">
+<img src="results/abb/abb1200/j3_acc.png" alt="Alt Text" width="300" height="auto">
+
+| MA2010                  | 1     | 2     | 3     | 4     | 5     | 6     |
+|-------------------------|-------|-------|-------|-------|-------|-------|
+| Velocity ($rad/s$)      | 1.745 | 1.571 | 1.571 | 3.316 | 2.443 | 3.316 |
+| Acceleration ($rad/s^2$)| *     | *     | *     | 42.5  | 36.8  | 50.5  |
+
+<img src="results/motoman/ma2010/j1_acc.png" alt="Alt Text" width="300" height="auto">
+<img src="results/motoman/ma2010/j2_acc.png" alt="Alt Text" width="300" height="auto">
+<img src="results/motoman/ma2010/j3_acc.png" alt="Alt Text" width="300" height="auto">
 
 ## Usage
 An example of Motoman and ABB is included as `motoman.bat` and `abb.bat`:

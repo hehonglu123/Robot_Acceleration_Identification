@@ -9,8 +9,8 @@ import numpy as np
 #             dic=i #string
 # dic = eval(dic) # this is orignal dict with instace dict
 
-dic = pickle.load(open('results/abb/sim/1200/1200.pickle','rb'))
-# dic = pickle.load(open('results/motoman/real/MA2010.pickle','rb'))
+dic = pickle.load(open('results/abb/abb6640/ABB6640_acc.pickle','rb'))
+# dic = pickle.load(open('results/motoman/MA2010/MA2010_acc.pickle','rb'))
 # dic = pickle.load(open('results/test.pickle','rb'))
 
 
@@ -62,6 +62,8 @@ ax.set_ylabel('q3 (rad)')
 ax.set_zlabel('q1 acc (rad/s^2)')
 
 plt.title('Joint1 Acceleration Limit', x=0.5, y=0.95)
+
+plt.savefig('results/j1_acc.png')
 plt.show()
 
 fig = plt.figure()
@@ -76,6 +78,8 @@ plt.title('Joint2 Acceleration Limit')
 fake2Dline = mpl.lines.Line2D([0],[0], linestyle="none", c='b', marker = 'o')
 fake2Dline2 = mpl.lines.Line2D([0],[0], linestyle="none", c='orange', marker = 'o')
 ax.legend([fake2Dline,fake2Dline2], ['- direction','+ direction'], numpoints = 1)
+
+plt.savefig('results/j2_acc.png')
 plt.show()
 
 
@@ -94,4 +98,6 @@ plt.title('Joint3 Acceleration Limit')
 fake2Dline = mpl.lines.Line2D([0],[0], linestyle="none", c='b', marker = 'o')
 fake2Dline2 = mpl.lines.Line2D([0],[0], linestyle="none", c='orange', marker = 'o')
 ax.legend([fake2Dline,fake2Dline2], ['- direction','+ direction'], numpoints = 1)
+
+plt.savefig('results/j3_acc.png')
 plt.show()
